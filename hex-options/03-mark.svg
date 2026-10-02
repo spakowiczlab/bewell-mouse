@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="mouse mark hex sticker">
+  <polygon fill="#E23B4A" points="300,24 539.02,162 539.02,438 300,576 60.98,438 60.98,162"/>
+  <polygon fill="#161216" points="300,44.78 521.02,172.39 521.02,427.61 300,555.22 78.98,427.61 78.98,172.39"/>
+
+  <g fill="#F4E6D4">
+    <path d="M210 300c-28 8-36 40-16 58" fill="none" stroke="#F4E6D4" stroke-width="8" stroke-linecap="round"/>
+    <ellipse cx="268" cy="292" rx="62" ry="46"/>
+    <ellipse cx="248" cy="328" rx="22" ry="12"/>
+    <ellipse cx="318" cy="334" rx="18" ry="11"/>
+    <ellipse cx="338" cy="248" rx="40" ry="34"/>
+    <path d="M362 232c22-2 42 12 40 28-4 12-26 16-42 4-6-8-6-22 2-32z"/>
+    <circle cx="312" cy="214" r="22"/>
+    <circle cx="348" cy="206" r="12"/>
+    <circle cx="316" cy="216" r="12" fill="#E23B4A"/>
+    <circle cx="356" cy="244" r="6" fill="#161216"/>
+    <circle cx="396" cy="256" r="4.5" fill="#E23B4A"/>
+    <path d="M390 248l16-6M392 256l16 1M390 264l15 6" fill="none" stroke="#F4E6D4" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <text x="300" y="455" text-anchor="middle" fill="#F4E6D4" font-family="Arial Black, Arial, sans-serif" font-size="34">bewell-mice</text>
+</svg>

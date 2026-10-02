@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="berry hex sticker">
+  <polygon fill="#F8E8D0" points="300,24 539.02,162 539.02,438 300,576 60.98,438 60.98,162"/>
+  <polygon fill="#351B4A" points="300,44.78 521.02,172.39 521.02,427.61 300,555.22 78.98,427.61 78.98,172.39"/>
+  <g fill="#1A0E16">
+    <path fill="#2C6236" d="M268 168c-8-28-38-30-40-8 6 14 24 18 40 8z"/>
+    <path fill="#3D7A46" d="M312 160c26-20 48-4 36 14-12 8-28 8-36-14z"/>
+    <g>
+      <circle cx="286" cy="214" r="18"/><circle cx="308" cy="202" r="18"/><circle cx="330" cy="214" r="18"/>
+      <circle cx="330" cy="240" r="18"/><circle cx="308" cy="252" r="18"/><circle cx="286" cy="240" r="18"/>
+      <circle cx="308" cy="227" r="16"/>
+    </g>
+    <g>
+      <circle cx="228" cy="292" r="20"/><circle cx="252" cy="278" r="20"/><circle cx="276" cy="292" r="20"/>
+      <circle cx="276" cy="320" r="20"/><circle cx="252" cy="334" r="20"/><circle cx="228" cy="320" r="20"/>
+      <circle cx="252" cy="306" r="18"/>
+    </g>
+    <g>
+      <circle cx="332" cy="300" r="20"/><circle cx="356" cy="286" r="20"/><circle cx="380" cy="300" r="20"/>
+      <circle cx="380" cy="328" r="20"/><circle cx="356" cy="342" r="20"/><circle cx="332" cy="328" r="20"/>
+      <circle cx="356" cy="314" r="18"/>
+    </g>
+  </g>
+  <text x="300" y="455" text-anchor="middle" fill="#F8E8D0" font-family="Arial Black, Arial, sans-serif" font-size="36">bewell-mice</text>
+</svg>
