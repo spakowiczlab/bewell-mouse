@@ -220,14 +220,20 @@ tiplabels(
 
 dev.off()
 ```
+
+
 ```{r}
 genus_representatives <- metadata %>%
   filter(
     gtdb_family == "f__Lachnospiraceae",
-    gtdb_representative == "t",
     !is.na(gtdb_genus),
     gtdb_genus != "g__"
   ) %>%
+  mutate(
+    is_representative = tolower(as.character(gtdb_representative)) %in%
+      c("t", "true", "1")
+  ) %>%
+  filter(is_representative) %>%
   arrange(
     gtdb_genus,
     accession
@@ -238,6 +244,9 @@ genus_representatives <- metadata %>%
   pull(accession) %>%
   intersect(tree$tip.label)
 
+length(genus_representatives)
+```
+```{r}
 tips_to_keep <- unique(
   c(
     genus_representatives,
@@ -259,44 +268,755 @@ target_positions_genus <- match(
 )
 
 target_positions_genus
+all(!is.na(target_positions_genus))
+```
+
+```{r}
+blautia_node <- getMRCA(
+  tree,
+  c(
+    "RS_GCF_025147765.1",
+    "RS_GCF_020687435.1"
+  )
+)
+
+blautia_tree <- extract.clade(
+  tree,
+  blautia_node
+)
+
+plot(
+  blautia_tree,
+  type = "phylogram"
+)
+```
+
+
+
+
+```{r}
+parent <- tree$edge[
+  tree$edge[,2] == which(tree$tip.label == "RS_GCF_000020605.1"),
+  1
+]
+
+agathobacter_tree <- extract.clade(
+  tree,
+  parent
+)
+```
+
+```{r}
+interesting_genera <- c(
+  "g__Blautia_A",
+  "g__Agathobacter",
+  "g__Roseburia",
+  "g__Lachnospira",
+  "g__Eubacterium"
+)
+
+tips_to_keep <- metadata %>%
+  filter(
+    gtdb_genus %in% interesting_genera,
+    gtdb_representative %in% c(TRUE, "TRUE", "t")
+  ) %>%
+  pull(accession) %>%
+  intersect(tree$tip.label)
+```
+
+```{r}
+selected_genera <- c(
+  "g__Blautia_A",
+  "g__Roseburia",
+  "g__Lachnospira",
+  "g__Coprococcus",
+  "g__Eubacterium"
+)
+
+selected_tips <- metadata %>%
+  filter(
+    gtdb_genus %in% selected_genera,
+    gtdb_representative %in% c(TRUE, "TRUE", "t")
+  ) %>%
+  pull(accession) %>%
+  intersect(tree$tip.label)
+
+selected_tips <- unique(
+  c(
+    selected_tips,
+    target_tips
+  )
+)
+
+selected_tree <- keep.tip(
+  tree,
+  selected_tips
+)
+
+length(selected_tree$tip.label)
+```
+```{r}
+target_positions_selected <- match(
+  target_tips,
+  selected_tree$tip.label
+)
+
+target_positions_selected
+
+all(!is.na(target_positions_selected))
 ```
 ```{r}
 pdf(
-  "Lachnospiraceae_genus_representative_tree.pdf",
+  "Lachnospiraceae_selected_genera_tree.pdf",
   width = 12,
-  height = 12
+  height = 14
 )
 
-par(mar = rep(1, 4))
+par(mar = c(1, 1, 1, 6))
 
 plot(
-  lachno_genus_tree,
-  type = "fan",
+  selected_tree,
+  type = "phylogram",
+  direction = "rightwards",
   show.tip.label = FALSE,
   show.node.label = FALSE,
-  use.edge.length = FALSE,
+  use.edge.length = TRUE,
   edge.width = 0.7,
-  no.margin = TRUE
+  no.margin = FALSE
 )
 
 tiplabels(
-  tip = target_positions_genus,
+  tip = target_positions_selected,
   pch = 21,
   bg = target_colors,
   col = "black",
-  cex = 1.7
+  cex = 1.5
 )
 
 tiplabels(
-  tip = target_positions_genus,
+  tip = target_positions_selected,
+  text = target_names,
+  frame = "none",
+  col = target_colors,
+  font = 3,
+  cex = 0.9,
+  adj = c(-0.15, 0.5)
+)
+
+legend(
+  "topleft",
+  legend = target_names,
+  pt.bg = target_colors,
+  pch = 21,
+  col = "black",
+  bty = "n",
+  text.font = 3,
+  cex = 0.9
+)
+
+dev.off()
+```
+```{r}
+## Simplified tree: target species + closest relatives
+
+# Phylogenetic distance among all Lachnospiraceae representatives
+dist_mat <- cophenetic.phylo(lachno_tree)
+
+# Number of closest relatives to show for each target
+n_neighbors <- 10
+
+closest_tips <- unique(
+  unlist(
+    lapply(target_tips, function(x) {
+
+      d <- sort(dist_mat[x, ])
+
+      # remove the target itself
+      d <- d[names(d) != x]
+
+      # keep nearest relatives
+      names(d)[seq_len(min(n_neighbors, length(d)))]
+    })
+  )
+)
+
+# Keep targets + closest relatives
+small_tips <- unique(
+  c(
+    target_tips,
+    closest_tips
+  )
+)
+
+small_tree <- keep.tip(
+  lachno_tree,
+  small_tips
+)
+
+length(small_tree$tip.label)
+```
+
+```{r}
+## Compact contextual phylogenetic tree
+
+# Pairwise phylogenetic distances
+dist_mat <- cophenetic.phylo(lachno_tree)
+
+# Keep only 2 nearest relatives per target
+n_neighbors <- 10
+
+closest_tips <- unique(
+  unlist(
+    lapply(target_tips, function(x) {
+
+      d <- sort(dist_mat[x, ])
+      d <- d[names(d) != x]
+
+      names(d)[1:n_neighbors]
+    })
+  )
+)
+
+# Targets + nearby relatives
+compact_tips <- unique(
+  c(target_tips, closest_tips)
+)
+
+compact_tree <- keep.tip(
+  lachno_tree,
+  compact_tips
+)
+
+compact_tree <- ladderize(compact_tree)
+```
+
+```{r}
+# Find target positions after pruning
+target_positions <- match(
+  target_tips,
+  compact_tree$tip.label
+)
+
+pdf(
+  "Three_species_compact_context_tree.pdf",
+  width = 6,
+  height = 4.5
+)
+
+par(
+  mar = c(1, 1, 1, 4)
+)
+
+plot(
+  compact_tree,
+  type = "phylogram",
+  direction = "rightwards",
+
+  # Do NOT label background species
+  show.tip.label = FALSE,
+  show.node.label = FALSE,
+
+  edge.width = 0.9,
+  use.edge.length = TRUE,
+  no.margin = FALSE
+)
+
+# Highlight only target species
+tiplabels(
+  tip = target_positions,
+  pch = 21,
+  bg = target_colors,
+  col = "black",
+  cex = 1.5
+)
+
+# Label only target species
+tiplabels(
+  tip = target_positions,
   text = target_names,
   frame = "none",
   col = target_colors,
   font = 3,
   cex = 1,
-  adj = c(-0.4, 0.5)
+  adj = c(-0.15, 0.5)
 )
 
 dev.off()
+```
+
+```{r}
+# Calculate maximum phylogenetic depth
+max_depth <- max(node.depth.edgelength(compact_tree2))
+
+pdf(
+  "Three_species_phylogram.pdf",
+  width = 7,
+  height = 5
+)
+
+par(
+  mar = c(1, 1, 1, 4),
+  xpd = NA
+)
+
+plot(
+  compact_tree2,
+  type = "phylogram",
+  direction = "rightwards",
+  show.tip.label = FALSE,
+  show.node.label = FALSE,
+  use.edge.length = TRUE,
+  edge.width = 0.9,
+  no.margin = FALSE,
+
+  # Add ~25% extra room for species names
+  x.lim = c(0, max_depth * 1.25)
+)
+
+tiplabels(
+  tip = target_positions2,
+  pch = 21,
+  bg = target_colors,
+  col = "black",
+  cex = 1
+)
+
+tiplabels(
+  tip = target_positions2,
+  text = target_names,
+  frame = "none",
+  col = target_colors,
+  font = 3,
+  cex = 1,
+  adj = c(-0.1, 0.5)
+)
+
+dev.off()
+```
+```{r}
+# Maximum tree depth, used to leave room for labels
+max_depth <- max(node.depth.edgelength(compact_tree2))
+
+pdf(
+  "Three_species_phylogram_final.pdf",
+  width = 12,     
+  height = 5
+)
+
+par(
+  mar = c(3, 1, 1, 7),
+  xpd = NA
+)
+
+plot(
+  compact_tree2,
+  type = "phylogram",
+  direction = "rightwards",
+  show.tip.label = FALSE,
+  show.node.label = FALSE,
+  use.edge.length = TRUE,   # KEEP real phylogenetic distances
+  edge.width = 0.5,
+  no.margin = FALSE,
+  x.lim = c(0, max_depth * 1.20)
+)
+
+tiplabels(
+  tip = target_positions2,
+  pch = 21,
+  bg = target_colors,
+  col = "black",
+  cex = 1.1
+)
+
+tiplabels(
+  tip = target_positions2,
+  text = target_names,
+  frame = "none",
+  col = target_colors,
+  font = 3,
+  cex = 1,
+  adj = c(-0.08, 0.5)
+)
+
+add.scale.bar(
+  lwd = 1,
+  cex = 0.8
+)
+
+dev.off()
+```
+comment dan
+```{r}
+## Find 2 nearest background tips to each target
+d_compact <- cophenetic.phylo(compact_tree2)
+
+n_labels_per_target <- 4
+
+extra_label_tips <- unique(
+  unlist(
+    lapply(target_tips, function(x) {
+
+      d <- sort(d_compact[x, ])
+
+      # remove the three target species
+      d <- d[
+        !names(d) %in% target_tips
+      ]
+
+      names(d)[
+        seq_len(
+          min(n_labels_per_target, length(d))
+        )
+      ]
+    })
+  )
+)
+
+extra_label_tips
+```
+```{r}
+extra_labels_df <- metadata %>%
+  filter(
+    accession %in% extra_label_tips
+  ) %>%
+  select(
+    accession,
+    gtdb_species,
+    ncbi_organism_name
+  ) %>%
+  mutate(
+    label = str_remove(
+      gtdb_species,
+      "^s__"
+    ),
+
+    # fallback if GTDB species name is missing
+    label = if_else(
+      is.na(label) | label == "",
+      ncbi_organism_name,
+      label
+    )
+  )
+
+extra_labels_df
+```
+```{r}
+extra_positions <- match(
+  extra_label_tips,
+  compact_tree2$tip.label
+)
+
+extra_labels <- extra_labels_df$label[
+  match(
+    extra_label_tips,
+    extra_labels_df$accession
+  )
+]
+
+extra_positions
+extra_labels
+```
+```{r}
+max_depth <- max(
+  node.depth.edgelength(compact_tree2)
+)
+
+pdf(
+  "Lachnospiraceae_subsample_labeled.pdf",
+  width = 10,
+  height = 6
+)
+
+par(
+  mar = c(3, 1, 1, 10),
+  xpd = NA
+)
+
+plot(
+  compact_tree2,
+  type = "phylogram",
+  direction = "rightwards",
+  show.tip.label = FALSE,
+  show.node.label = FALSE,
+  use.edge.length = TRUE,
+  edge.width = 0.6,
+  no.margin = FALSE,
+  x.lim = c(
+    0,
+    max_depth * 1.40
+  )
+)
+
+## Label neighboring taxa
+tiplabels(
+  tip = extra_positions,
+  text = extra_labels,
+  frame = "none",
+  col = "black",
+  font = 3,
+  cex = 0.65,
+  adj = c(-0.05, 0.5)
+)
+
+## Highlight the three targets
+target_positions2 <- match(
+  target_tips,
+  compact_tree2$tip.label
+)
+
+tiplabels(
+  tip = target_positions2,
+  pch = 21,
+  bg = target_colors,
+  col = "black",
+  cex = 1.1
+)
+
+tiplabels(
+  tip = target_positions2,
+  text = target_names,
+  frame = "none",
+  col = target_colors,
+  font = 3,
+  cex = 0.9,
+  adj = c(-0.08, 0.5)
+)
+
+add.scale.bar(
+  length = 0.05,
+  lwd = 0.6,
+  cex = 0.75
+)
+
+dev.off()
+```
+```{r}
+# A. rectalis target accession
+ar_target <- "RS_GCF_000020605.1"
+
+# Find the 3 labeled neighbors specifically closest to A. rectalis
+d_ar <- sort(
+  d_compact[ar_target, ]
+)
+
+ar_neighbors <- names(d_ar)[
+  !names(d_ar) %in% target_tips
+][1:3]
+
+# Target + neighbors
+ar_check_tips <- c(
+  ar_target,
+  ar_neighbors
+)
+
+metadata %>%
+  filter(accession %in% ar_check_tips) %>%
+  select(
+    accession,
+    ncbi_organism_name,
+    ncbi_strain_identifiers,
+    gtdb_family,
+    gtdb_genus,
+    gtdb_species
+  )
+```
+
+```{r}
+ar_taxonomy_check <- metadata %>%
+  filter(accession %in% ar_check_tips) %>%
+  transmute(
+    accession,
+    NCBI_name = ncbi_organism_name,
+    strain = ncbi_strain_identifiers,
+    GTDB_family = str_remove(gtdb_family, "^f__"),
+    GTDB_genus = str_remove(gtdb_genus, "^g__"),
+    GTDB_species = str_remove(gtdb_species, "^s__")
+  )
+
+ar_taxonomy_check
+```
+```{r}
+metadata %>%
+  filter(accession == "RS_GCF_000020605.1") %>%
+  select(
+    accession,
+    ncbi_organism_name,
+    gtdb_genus,
+    gtdb_species
+  )
+```
+```{r}
+label_check <- metadata %>%
+  filter(accession %in% extra_label_tips) %>%
+  select(
+    accession,
+    ncbi_organism_name,
+    ncbi_strain_identifiers,
+    gtdb_genus,
+    gtdb_species
+  )
+
+label_check
+
+
+```
+
+L-car
+```{r}
+get_carnitine_hits <- function(x, species) {
+
+  x %>%
+    filter(V1 == "*") %>%
+    transmute(
+      Species = species,
+      gene_id = V2,
+      KO = V3,
+      threshold = V4,
+      score = V5,
+      evalue = V6,
+      definition = V7
+    ) %>%
+    filter(
+      str_detect(
+        definition,
+        regex("carnitine|cai[A-Z]?", ignore_case = TRUE)
+      )
+    )
+}
+
+carnitine_hits <- bind_rows(
+  get_carnitine_hits(A_rectalis_kofams, "A. rectalis"),
+  get_carnitine_hits(B_obeum_kofams, "B. obeum"),
+  get_carnitine_hits(B_massiliensis_kofams, "B. massiliensis")
+)
+
+carnitine_hits
+```
+
+```{r}
+carnitine_hits %>%
+  distinct(Species, KO, definition) %>%
+  arrange(Species, KO)
+```
+```{r}
+carnitine_KOs <- c(
+  "K05245",  # caiT - L-carnitine/gamma-butyrobetaine antiporter
+  "K02182",  # caiC - carnitine-CoA ligase
+  "K08297",  # caiA - crotonobetainyl-CoA dehydrogenase
+  "K08298",  # caiB - L-carnitine CoA-transferase
+  "K08299"   # caiD - crotonobetainyl-CoA hydratase
+)
+
+carnitine_presence <- tibble(
+  KO = carnitine_KOs,
+  `A. rectalis` = KO %in% ar_sig,
+  `B. obeum` = KO %in% bo_sig,
+  `B. massiliensis` = KO %in% bm_sig
+)
+
+carnitine_presence
+```
+
+```{r}
+carnitine_plot <- carnitine_presence %>%
+  pivot_longer(
+    cols = -KO,
+    names_to = "Species",
+    values_to = "Present"
+  ) %>%
+  mutate(
+    Species = factor(
+      Species,
+      levels = c(
+        "B. massiliensis",
+        "B. obeum",
+        "A. rectalis"
+      )
+    )
+  )
+
+ggplot(
+  carnitine_plot,
+  aes(
+    x = KO,
+    y = Species,
+    fill = Present
+  )
+) +
+  geom_tile(
+    color = "black",
+    linewidth = 0.3,
+    width = 0.85,
+    height = 0.75
+  ) +
+  scale_fill_manual(
+    values = c(
+      "FALSE" = "white",
+      "TRUE" = "black"
+    ),
+    guide = "none"
+  ) +
+  labs(
+    x = "Carnitine-associated KEGG Ortholog",
+    y = NULL
+  ) +
+  theme_classic(base_size = 11) +
+  theme(
+    axis.text.y = element_text(face = "italic"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.ticks = element_blank()
+  )
+```
+```{r}
+get_carnitine_hits <- function(x, species) {
+
+  x %>%
+    filter(V1 == "*") %>%
+    transmute(
+      Species = species,
+      gene_id = V2,
+      KO = V3,
+      threshold = V4,
+      score = V5,
+      evalue = V6,
+      definition = V7
+    ) %>%
+    filter(
+      str_detect(
+        definition,
+        regex(
+          "carnitine|crotonobetaine|butyrobetaine",
+          ignore_case = TRUE
+        )
+      )
+    )
+}
+
+carnitine_hits <- bind_rows(
+  get_carnitine_hits(A_rectalis_kofams, "A. rectalis"),
+  get_carnitine_hits(B_obeum_kofams, "B. obeum"),
+  get_carnitine_hits(B_massiliensis_kofams, "B. massiliensis")
+)
+
+carnitine_hits
+```
+
+```{r}
+carnitine_KOs <- c(
+  "K05245",  # caiT
+  "K02182",  # caiC
+  "K08297",  # caiA
+  "K08298",  # caiB
+  "K08299"   # caiD
+)
+
+carnitine_presence <- tibble(
+  KO = carnitine_KOs,
+  `A. rectalis` = KO %in% ar_sig,
+  `B. obeum` = KO %in% bo_sig,
+  `B. massiliensis` = KO %in% bm_sig
+)
+
+carnitine_presence
 ```
 
