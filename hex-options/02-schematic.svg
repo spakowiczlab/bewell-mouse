@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="schematic hex sticker">
+  <polygon fill="#1C1916" points="300,24 539.02,162 539.02,438 300,576 60.98,438 60.98,162"/>
+  <polygon fill="#F4EFE6" points="300,40 524.4,169.6 524.4,430.4 300,560 75.6,430.4 75.6,169.6"/>
+
+  <!-- berry -->
+  <g fill="#1A0E16">
+    <path fill="#3D7A46" d="M132 196c14-12 28-2 22 8-8 4-16 4-22-8z"/>
+    <circle cx="118" cy="228" r="9"/><circle cx="132" cy="220" r="9"/><circle cx="146" cy="228" r="9"/>
+    <circle cx="146" cy="244" r="9"/><circle cx="132" cy="252" r="9"/><circle cx="118" cy="244" r="9"/>
+    <circle cx="132" cy="236" r="8"/>
+    <circle cx="168" cy="248" r="9"/><circle cx="182" cy="240" r="9"/><circle cx="196" cy="248" r="9"/>
+    <circle cx="196" cy="264" r="9"/><circle cx="182" cy="272" r="9"/><circle cx="168" cy="264" r="9"/>
+    <circle cx="182" cy="256" r="8"/>
+    <circle cx="100" cy="252" r="9"/><circle cx="114" cy="244" r="9"/><circle cx="128" cy="252" r="9"/>
+    <circle cx="128" cy="268" r="9"/><circle cx="114" cy="276" r="9"/><circle cx="100" cy="268" r="9"/>
+    <circle cx="114" cy="260" r="8"/>
+  </g>
+
+  <path d="M210 250h36" fill="none" stroke="#1C1916" stroke-width="4" stroke-linecap="round"/>
+  <path d="M238 242l14 8-14 8" fill="none" stroke="#1C1916" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- person -->
+  <g fill="#1C1916">
+    <circle cx="300" cy="214" r="16"/>
+    <rect x="282" y="234" width="36" height="40" rx="14"/>
+    <rect x="286" y="264" width="10" height="36" rx="5"/>
+    <rect x="304" y="264" width="10" height="36" rx="5"/>
+  </g>
+
+  <path d="M332 250h36" fill="none" stroke="#1C1916" stroke-width="4" stroke-linecap="round"/>
+  <path d="M360 242l14 8-14 8" fill="none" stroke="#1C1916" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- mouse -->
+  <g fill="#C4A48C">
+    <path d="M400 268c-12 6-16 20-6 28" fill="none" stroke="#C4A48C" stroke-width="3" stroke-linecap="round"/>
+    <ellipse cx="424" cy="268" rx="22" ry="16"/>
+    <ellipse cx="448" cy="256" rx="14" ry="12"/>
+    <path d="M456 250c8 0 16 5 15 11-2 4-10 5-16 1z"/>
+    <circle cx="440" cy="242" r="8"/>
+    <circle cx="441" cy="243" r="4" fill="#E7C2BE"/>
+    <circle cx="454" cy="254" r="2" fill="#1C1916"/>
+    <circle cx="468" cy="260" r="1.8" fill="#8C4E48"/>
+  </g>
+  <!-- checkpoint antibody -->
+  <g fill="none" stroke="#1C1916" stroke-width="3" stroke-linecap="round">
+    <path d="M492 232v18"/>
+    <path d="M492 232l-10-14"/>
+    <path d="M492 232l10-14"/>
+    <path d="M482 218l-6-6M482 218l4-7"/>
+    <path d="M502 218l6-6M502 218l-4-7"/>
+  </g>
+
+  <text x="300" y="430" text-anchor="middle" fill="#1C1916" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" letter-spacing="1">bewell-mice</text>
+</svg>
