@@ -33,7 +33,7 @@ Corresponding author: [daniel.spakowicz@osumc.edu](mailto:daniel.spakowicz@osumc
 
 The companion trial manuscript is cited from [spakowiczlab/bewell](https://github.com/spakowiczlab/bewell).
 
-## How a reviewer regenerates the figures
+## Regenerating manuscript figures
 
 Panel letters below match the figures in the submitted manuscript.
 
