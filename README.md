@@ -70,7 +70,7 @@ Figures 1–3, and the three short-chain fatty acids in Figure 5C, have a shorte
 | `manuscript/scripts/BO_BM_vs_AR_KEGG_analysis.Rmd` | [`exploratory/scripts/BO_BM_vs_AR_KEGG_analysis.Rmd`](exploratory/scripts/BO_BM_vs_AR_KEGG_analysis.Rmd) |
 | `manuscript/scripts/mimic_gavaged-sample_barplots.Rmd` | [`exploratory/scripts/mimic_gavaged-sample_barplots.Rmd`](exploratory/scripts/mimic_gavaged-sample_barplots.Rmd) |
 
-Model functions live in `manuscript/scripts/analysis-scripts/`. The packages those functions attach are listed in [`manuscript/scripts/analysis-scripts/packages.R`](manuscript/scripts/analysis-scripts/packages.R). The code is released under the [MIT license](LICENSE).
+Model functions live in `manuscript/scripts/analysis-scripts/`. The packages those functions attach are listed in [`manuscript/scripts/analysis-scripts/packages.R`](manuscript/scripts/analysis-scripts/packages.R). The code is released under the [Polyform Non-commercial license](LICENSE).
 
 ## Where each panel is
 
