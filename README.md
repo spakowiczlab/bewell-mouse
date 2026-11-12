@@ -2,7 +2,7 @@
 <tr>
 <td>
 
-# bewell-mice [![DOI](zenodo-doi.svg)](https://doi.org/10.5281/zenodo.22968650)
+# bewell-mouse [![DOI](zenodo-doi.svg)](https://doi.org/10.5281/zenodo.22968650)
 
 Black raspberry nectar, the gut microbiome, and immune checkpoint response
 
