@@ -9,7 +9,7 @@ Black raspberry nectar, the gut microbiome, and immune checkpoint response
 </td>
 <td align="right" width="220">
 
-<img src="dmm21-hex.svg" width="200" alt="bewell-mice hex sticker">
+<img src="dmm21-hex.svg" width="200" alt="bewell-mouse hex sticker">
 
 </td>
 </tr>
